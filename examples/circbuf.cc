@@ -1,3 +1,8 @@
+/*
+This is a simple demo how to use CircBuf.
+Use as you wish, at your own risk.
+*/
+
 #include <CircBuf.hpp>
 #include <iostream>
 
