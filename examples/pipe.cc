@@ -1,3 +1,8 @@
+/*
+This is a simple demo how to use Pipe.
+Use as you wish, at your own risk.
+*/
+
 #include <iostream>
 #include <sstream>
 #include <linux/Pipe.hpp>
