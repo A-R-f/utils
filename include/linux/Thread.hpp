@@ -25,6 +25,7 @@ public:
 	~Thread() { if( started ) { pthread_join(thread, NULL); } }
 
 	int run() { return started = true, pthread_create(&thread, NULL, thread_main, arg); }
+
 };
 
 #endif
