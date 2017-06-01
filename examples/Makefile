@@ -1,7 +1,7 @@
 all: circbuf pipe signal thread
 
 clean:
-	rm -rf circbuf pipe
+	rm -rf circbuf pipe signal thread
 
 circbuf: circbuf.cc ../include/CircBuf.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include circbuf.cc -o circbuf
