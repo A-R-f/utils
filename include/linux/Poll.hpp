@@ -43,6 +43,7 @@ public:
 	Poll(const int fd[NUMBER]) : fds(fd) {}
 
 	int operator()() { return execute(); }
+	operator int() { return execute(); }
 	int execute() { return poll(fds, NUMBER, TIMEOUT); }
 };
 

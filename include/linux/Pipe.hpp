@@ -30,7 +30,7 @@ public:
 	int read(void* const data, const size_t cnt) const { return ::read(fdes.named.read, data, cnt); }
 	int write(const void* const data, const size_t cnt) const { return ::write(fdes.named.write, data, cnt); }
 
-	bool data_available() const { return InputPoll(fdes.named.read)() > 0; }
+	bool data_available() const { return InputPoll(fdes.named.read) > 0; }
 
 	void flush() const { for( char c ; data_available() ; read(&c, 1) ); }
 
