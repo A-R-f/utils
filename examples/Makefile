@@ -1,10 +1,13 @@
-all: circbuf pipe serial signal thread
+all: circbuf cobs pipe serial signal thread
 
 clean:
 	rm -rf circbuf pipe serial signal thread
 
 circbuf: circbuf.cc ../include/CircBuf.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include circbuf.cc -o circbuf
+
+cobs: cobs.cc ../include/COBS.hpp
+	g++ -O2 -Wall -Wextra -Wpedantic -I../include cobs.cc -o cobs
 
 pipe: pipe.cc ../include/linux/Pipe.hpp ../include/linux/Poll.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include pipe.cc -o pipe
