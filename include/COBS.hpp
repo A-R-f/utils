@@ -75,6 +75,25 @@ struct COBS {
 //decode a buffer in place
 	static int decode(unsigned char data[], const unsigned int len) { return decode(data, data, len); }
 
+//general templates intended for use with std::vector<unsigned char>
+	template<typename T>
+	static int encode(T& buf)
+	{
+		const typename T::size_type len = buf.size();
+		buf.insert(buf.begin(), 0);
+		buf.push_back(0);
+		return encode(buf.data(), len);
+	}
+
+	template<typename T>
+	static int decode(T& buf)
+	{
+		const int rv = decode(buf.data(), buf.size());
+		buf.pop_back();
+		buf.pop_back();
+		return rv;
+	}
+
 };
 
 #endif

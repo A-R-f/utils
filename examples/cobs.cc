@@ -31,10 +31,8 @@ int main()
 		cout << " 0x" << c;
 	}
 	cout << dec << '\n';
-	buf.push_back(0);
-	buf.insert(buf.begin(), 0);
 
-	COBS::encode(buf.data(), buf.size() - 2);
+	COBS::encode(buf);
 
 	cout << "encoded data: \n" << hex;
 	for( unsigned int i = 0 ; i < buf.size() ; ++i )
@@ -44,12 +42,10 @@ int main()
 	}
 	cout << dec << '\n';
 
-	const int len = COBS::decode(buf.data(), buf.size());
-
-	while( int(buf.size()) > len ) { buf.pop_back(); }
+	COBS::decode(buf);
 
 	cout << "decoded data: \n" << hex;
-	for( int i = 0 ; i < len ; ++i )
+	for( unsigned int i = 0 ; i < buf.size() ; ++i )
 	{
 		const int c = buf[i];
 		cout << " 0x" << c;
