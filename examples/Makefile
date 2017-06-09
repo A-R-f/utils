@@ -1,7 +1,9 @@
-all: circbuf cobs pipe serial signal thread
+TARGETS = circbuf cobs pipe serial signal thread
+
+all: $(TARGETS)
 
 clean:
-	rm -rf circbuf pipe serial signal thread
+	rm -rf $(TARGETS)
 
 circbuf: circbuf.cc ../include/CircBuf.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include circbuf.cc -o circbuf
