@@ -1,9 +1,12 @@
 TARGETS = circbuf cobs pipe serial signal thread
+WINTARGETS = winserial.exe
 
 all: $(TARGETS)
 
+winall: $(WINTARGETS)
+
 clean:
-	rm -rf $(TARGETS)
+	rm -rf $(TARGETS) $(WINTARGETS)
 
 circbuf: circbuf.cc ../include/CircBuf.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include circbuf.cc -o circbuf
@@ -22,3 +25,6 @@ signal: signal.cc ../include/linux/Signal.hpp
 
 thread: thread.cc ../include/linux/Thread.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include thread.cc -o thread -lpthread
+
+winserial.exe: winserial.cc ../include/windows/Serial.hpp
+	x86_64-w64-mingw32-g++ -static -O2 -Wall -Wextra -Wpedantic -I../include winserial.cc -o winserial.exe
