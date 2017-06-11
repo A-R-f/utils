@@ -20,8 +20,8 @@ public:
 	Mutex() { pthread_mutex_init(&mutex, NULL); }
 	~Mutex() { pthread_mutex_destroy(&mutex); }
 
-	int lock() { return pthread_mutex_lock(&mutex); }
-	int unlock() { return pthread_mutex_unlock(&mutex); }
+	bool lock() { return pthread_mutex_lock(&mutex) == 0; }
+	bool unlock() { return pthread_mutex_unlock(&mutex) == 0; }
 
 };
 

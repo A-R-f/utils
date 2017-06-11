@@ -5,8 +5,8 @@ Use as you wish, at your own risk.
 
 #include <iostream>
 #include <sstream>
-#include <linux/Mutex.hpp>
-#include <linux/Thread.hpp>
+#include <windows/Mutex.hpp>
+#include <windows/Thread.hpp>
 #include <unistd.h>
 
 using namespace std;
@@ -17,32 +17,32 @@ static void display(const string& owner, const string& s)
 	mutex.lock();
 	cout << owner << " displays" << '\n';
 	cout << '\t' << s << '\n';
-	usleep(500000);
+	Sleep(500);
 	cout << owner << " over and out" << '\n';
 	mutex.unlock();
 }
 
-static Thread::return_type thread1_main(void* const arg)
+static Thread::return_type thread1_main(LPVOID arg)
 {
 	for(unsigned int i = 10 ; i > 0  ; --i )
 	{
 		ostringstream s;
 		s << "thread1; i = " << i;
 		display("thread1", s.str());
-		usleep(1000000);
+		Sleep(1000);
 	}
 	display("thread1", "thread1 done");
 	return Thread::null_return();
 }
 
-static Thread::return_type thread2_main(void* const arg)
+static Thread::return_type thread2_main(LPVOID arg)
 {
 	for(unsigned int i = 10 ; i > 0  ; --i )
 	{
 		ostringstream s;
 		s << "thread2; i = " << i;
 		display("thread2", s.str());
-		usleep(702303);
+		Sleep(702);
 	}
 	display("thread2", "thread2 done");
 	return Thread::null_return();

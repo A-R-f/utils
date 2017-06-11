@@ -11,10 +11,15 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 
 #include <pthread.h>
 
-class Thread {
+struct Thread {
+
+	typedef void* return_type;
+	typedef return_type (*thread_main_type)(void*);
+	static return_type null_return() { return NULL; }
+
+private:
 
 	pthread_t thread;
-	typedef void*(*thread_main_type)(void*);
 	thread_main_type thread_main;
 	void* arg;
 	bool started;
