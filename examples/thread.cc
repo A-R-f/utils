@@ -22,35 +22,36 @@ static void display(const string& owner, const string& s)
 	mutex.unlock();
 }
 
-static Thread::return_type thread1_main(void* const arg)
-{
-	for(unsigned int i = 10 ; i > 0  ; --i )
-	{
-		ostringstream s;
-		s << "thread1; i = " << i;
-		display("thread1", s.str());
-		usleep(1000000);
-	}
-	display("thread1", "thread1 done");
-	return Thread::null_return();
-}
+struct Thread_Config {
+	string name;
+	unsigned int sleep_time;
+	unsigned int cnt_start;
+	Thread_Config(const string& _n, const unsigned int _st, const unsigned int _cs) :
+		name(_n),
+		sleep_time(_st),
+		cnt_start(_cs)
+	{}
+};
 
-static Thread::return_type thread2_main(void* const arg)
+static Thread::return_type thread_main(const Thread::arg_type arg)
 {
-	for(unsigned int i = 10 ; i > 0  ; --i )
+	Thread_Config& cfg = *(Thread_Config*)arg;
+	for(unsigned int i = cfg.cnt_start ; i > 0  ; --i )
 	{
 		ostringstream s;
-		s << "thread2; i = " << i;
-		display("thread2", s.str());
-		usleep(702303);
+		s << cfg.name << "; i = " << i;
+		display(cfg.name, s.str());
+		usleep(cfg.sleep_time);
 	}
-	display("thread2", "thread2 done");
+	display(cfg.name, "I'm done");
 	return Thread::null_return();
 }
 
 int main()
 {
-	Thread thread1(thread1_main, NULL, true);
-	Thread thread2(thread2_main, NULL, true);
+	Thread_Config tc1("thread1", 1000000, 11);
+	Thread_Config tc2("thread2", 720303, 9);
+	Thread thread1(thread_main, &tc1, true);
+	Thread thread2(thread_main, &tc2, true);
 	return 0;
 }

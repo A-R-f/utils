@@ -14,7 +14,8 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 struct Thread {
 
 	typedef DWORD WINAPI return_type;
-	typedef return_type (*thread_main_type)(const LPVOID);
+	typedef LPVOID arg_type;
+	typedef return_type (*thread_main_type)(const arg_type);
 	static return_type null_return() { return 0; }
 
 private:
@@ -26,10 +27,10 @@ private:
 
 public:
 
-	Thread(const thread_main_type _thread_main, const LPVOID _arg = NULL, const bool start = false) : thread_main(_thread_main), arg(_arg), started(false) { if( start) { run(); } }
+	Thread(const thread_main_type _thread_main, const arg_type _arg = NULL, const bool start = false) : thread_main(_thread_main), arg(_arg), started(false) { if( start) { run(); } }
 	~Thread() { if( started ) { WaitForSingleObject(thread, INFINITE); CloseHandle(thread); } }
 
-	HANDLE WINAPI run() { return started = true, thread = CreateThread(NULL, 0, thread_main, NULL, 0, NULL); }
+	HANDLE WINAPI run() { return started = true, thread = CreateThread(NULL, 0, thread_main, arg, 0, NULL); }
 
 };
 
