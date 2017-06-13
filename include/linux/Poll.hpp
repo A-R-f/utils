@@ -11,7 +11,7 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 
 #include <poll.h>
 
-template<
+template <
 	short EVENTS,
 	nfds_t NUMBER = 1,
 	int TIMEOUT = 0

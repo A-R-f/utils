@@ -1,4 +1,4 @@
-TARGETS = circbuf cobs pipe serial signal thread
+TARGETS = circbuf cobs pipe serial signal thread tokenizer
 WINTARGETS = winserial.exe winthread.exe
 
 all: $(TARGETS)
@@ -25,6 +25,9 @@ signal: signal.cc ../include/linux/Signal.hpp
 
 thread: thread.cc ../include/linux/Thread.hpp ../include/linux/Mutex.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include thread.cc -o thread -lpthread
+
+tokenizer: tokenizer.cc ../include/Tokenizer.hpp
+	g++ -O2 -Wall -Wextra -Wpedantic -I../include tokenizer.cc -o tokenizer
 
 winserial.exe: winserial.cc ../include/windows/Serial.hpp
 	x86_64-w64-mingw32-g++ -static -O2 -Wall -Wextra -Wpedantic -I../include winserial.cc -o winserial.exe

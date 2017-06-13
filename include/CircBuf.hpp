@@ -9,7 +9,7 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 #ifndef __CIRCBUF_HPP
 #define __CIRCBUF_HPP
 
-template<
+template <
 	unsigned int SIZE = 32,
 	typename data_typename = unsigned char,
 	typename cnt_typename = unsigned int,

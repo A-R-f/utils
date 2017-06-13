@@ -76,7 +76,7 @@ struct COBS {
 	static int decode(unsigned char data[], const unsigned int len) { return decode(data, data, len); }
 
 //general templates intended for use with std::vector<unsigned char>
-	template<typename T>
+	template < typename T >
 	static int encode(T& buf)
 	{
 		const typename T::size_type len = buf.size();
@@ -85,7 +85,7 @@ struct COBS {
 		return encode(buf.data(), len);
 	}
 
-	template<typename T>
+	template < typename T >
 	static int decode(T& buf)
 	{
 		const int rv = decode(buf.data(), buf.size());
