@@ -14,23 +14,22 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 
 class Pipe {
 
-	union FDes {
-		int all[2];
-		struct Named {
-			int read;
-			int write;
-		} named;
-	} fdes;
+	struct FDesc {
+		int fd[2];
+		int read() const { return fd[0]; }
+		int write() const { return fd[1]; }
+		operator int*() { return fd; }
+	} fdesc;
 
 public:
 
-	Pipe() { pipe(fdes.all); }
-	~Pipe() { close(fdes.named.write); close(fdes.named.read); }
+	Pipe() { pipe(fdesc); }
+	~Pipe() { close(fdesc.write()); close(fdesc.read()); }
 
-	int read(void* const data, const size_t cnt) const { return ::read(fdes.named.read, data, cnt); }
-	int write(const void* const data, const size_t cnt) const { return ::write(fdes.named.write, data, cnt); }
+	int read(void* const data, const size_t cnt) const { return ::read(fdesc.read(), data, cnt); }
+	int write(const void* const data, const size_t cnt) const { return ::write(fdesc.write(), data, cnt); }
 
-	bool data_available() const { return InputPoll(fdes.named.read) > 0; }
+	bool data_available() const { return InputPoll(fdesc.read()) > 0; }
 
 	void flush() const { for( char c ; data_available() ; read(&c, 1) ); }
 
