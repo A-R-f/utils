@@ -75,12 +75,12 @@ public:
 		_port(dev)
 	{
 		open(dev);
-		if( _fd >= 0 ) { configure(baud); }
+		if( ok() ) { configure(baud); }
 	}
 
 	~Serial()
 	{
-		if( _fd >= 0 )
+		if( ok() )
 		{
 //			restore();
 			close();
@@ -92,6 +92,8 @@ public:
 
 	int fd() const { return _fd; }
 	const std::string& port() const { return _port; }
+
+	bool ok() const { return fd() >= 0; }
 
 	bool data_available() const { return InputPoll(_fd) > 0; }
 

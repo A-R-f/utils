@@ -38,12 +38,12 @@ public:
 		_port(dev)
 	{
 		open(dev);
-		if( _fd != INVALID_HANDLE_VALUE ) { configure(baud); }
+		if( ok() ) { configure(baud); }
 	}
 
 	~Serial()
 	{
-		if( _fd != INVALID_HANDLE_VALUE )
+		if( ok() )
 		{
 //			restore();
 			close();
@@ -59,6 +59,8 @@ public:
 
 	const HANDLE& fd() const { return _fd; }
 	const std::string& port() const { return _port; }
+
+	bool ok() const { return fd() != INVALID_HANDLE_VALUE; }
 
 	bool data_available()
 	{
