@@ -15,6 +15,7 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 struct Tokenizer : private std::stringstream {
 
 //methods for checking state
+	bool empty() const { return std::stringstream::eof(); }
 	bool fail() const { return std::stringstream::fail(); }
 	std::string str() const { return std::stringstream::str(); }
 
