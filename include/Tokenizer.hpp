@@ -18,6 +18,7 @@ struct Tokenizer : private std::stringstream {
 	bool empty() const { return std::stringstream::eof(); }
 	bool fail() const { return std::stringstream::fail(); }
 	std::string str() const { return std::stringstream::str(); }
+	std::string rem_str() { return std::stringstream::str().substr(std::stringstream::tellg()); }
 
 //formatted input
 	template < typename T >
