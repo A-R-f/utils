@@ -13,6 +13,8 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 #include <termios.h>
 #include <unistd.h>
 #include <linux/Poll.hpp>
+#include <string>
+
 
 class Serial {
 

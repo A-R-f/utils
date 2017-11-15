@@ -11,6 +11,7 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 
 #include <windows.h>
 
+
 class Serial {
 
 	std::string _port;
