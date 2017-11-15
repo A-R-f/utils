@@ -123,7 +123,7 @@ public:
 			read(&c, 1);
 			if( ( c != delim ) || keep_delim )
 			{
-				buf.push(c);
+				buf.push_back(c);
 				++cnt;
 			}
 			if( c == delim ) { break; }
