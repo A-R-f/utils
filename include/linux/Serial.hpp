@@ -98,6 +98,7 @@ public:
 	bool data_available() const { return InputPoll(_fd) > 0; }
 
 	int read(unsigned char buf[], const unsigned int len) { return ::read(_fd, buf, len); }
+
 	int read(std::string& s)
 	{
 		s.clear();
@@ -109,8 +110,31 @@ public:
 		return s.length();
 	}
 
+//template member function intended for use with std::vectr<unsigned char>
+	template < typename T >
+	int read(T& buf, const unsigned char delim = 0, const bool keep_delim = true)
+	{
+		int cnt = 0;
+		unsigned char c;
+		while(1)
+		{
+			read(&c, 1);
+			if( ( c != delim ) || keep_delim )
+			{
+				buf.push(c);
+				++cnt;
+			}
+			if( c == delim ) { break; }
+		}
+		return cnt;
+	}
+
 	int write(const unsigned char buf[], const unsigned int len) { return ::write(_fd, buf, len); }
-	int write(const std::string& s) { return write((unsigned char*)	s.c_str(), s.length()); }
+	int write(const std::string& s) { return write((unsigned char*)s.c_str(), s.length()); }
+	int write(const char* const s) { return write(std::string(s)); }
+//template member function intended for use with std::vectr<unsigned char>
+	template < typename T > int write(const T& buf) { return write(buf.data(), buf.size()); }
 };
+
 
 #endif
