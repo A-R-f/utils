@@ -35,16 +35,18 @@ class Poll {
 
 		operator pollfd*() { return _fds; }
 
-	} fds;
+	} _fds;
 
 public:
 
-	Poll(const int& fd) : fds(&fd) {}
-	Poll(const int fd[NUMBER]) : fds(fd) {}
+	Poll(const int& fd) : _fds(&fd) {}
+	Poll(const int fd[NUMBER]) : _fds(fd) {}
 
 	int operator()() { return execute(); }
 	operator int() { return execute(); }
-	int execute() { return poll(fds, NUMBER, TIMEOUT); }
+	int execute() { return poll(_fds, NUMBER, TIMEOUT); }
+
+	const pollfd* fds() const { return _fds; }
 };
 
 typedef Poll<POLLIN> InputPoll;
