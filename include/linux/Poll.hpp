@@ -34,6 +34,7 @@ class Poll {
 		}
 
 		operator pollfd*() { return _fds; }
+		operator const pollfd*() const { return _fds; }
 
 	} _fds;
 
@@ -46,7 +47,7 @@ public:
 	operator int() { return execute(); }
 	int execute() { return poll(_fds, NUMBER, TIMEOUT); }
 
-	const pollfd* fds() const { return _fds; }
+	const pollfd* fds(const size_t n = 0) const { return (const pollfd*)(_fds) + n; }
 };
 
 typedef Poll<POLLIN> InputPoll;
