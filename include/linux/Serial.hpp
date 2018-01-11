@@ -112,7 +112,7 @@ public:
 		return s.length();
 	}
 
-//template member function intended for use with std::vectr<unsigned char>
+//template member function intended for use with std::vector<unsigned char>
 	template < typename T >
 	int read(T& buf, const unsigned char delim = 0, const bool keep_delim = true)
 	{
@@ -134,7 +134,7 @@ public:
 	int write(const unsigned char buf[], const unsigned int len) { return ::write(_fd, buf, len); }
 	int write(const std::string& s) { return write((unsigned char*)s.c_str(), s.length()); }
 	int write(const char* const s) { return write(std::string(s)); }
-//template member function intended for use with std::vectr<unsigned char>
+//template member function intended for use with std::vector<unsigned char>
 	template < typename T > int write(const T& buf) { return write(buf.data(), buf.size()); }
 };
 
