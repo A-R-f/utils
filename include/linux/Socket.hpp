@@ -96,6 +96,8 @@ struct Socket {
 
 	struct EP_Ptr_Set : public std::set<const Endpoint*, EP_Ptr_less>
 	{
+		typedef std::set<const Endpoint*, EP_Ptr_less> Base_Set;
+
 		operator bool() const { return !empty(); }
 
 		const Endpoint* pop_first()
@@ -105,6 +107,10 @@ struct Socket {
 			erase(begin());
 			return rv;
 		}
+
+		std::pair<iterator, bool> insert(const value_type& v) { return Base_Set::insert(v); }
+
+		void insert(const EP_Ptr_Set& s) { Base_Set::insert(s.begin(), s.end()); }
 	};
 
 private:
