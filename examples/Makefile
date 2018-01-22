@@ -1,4 +1,4 @@
-TARGETS = circbuf cobs msgproc pipe serial signal socket thread tokenizer
+TARGETS = circbuf cobs msgproc pipe serial signal socket thread timeout tokenizer
 WINTARGETS = winserial.exe winthread.exe
 
 all: $(TARGETS)
@@ -31,6 +31,9 @@ socket: socket.cc ../include/linux/Socket.hpp
 
 thread: thread.cc ../include/linux/Thread.hpp ../include/linux/Mutex.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include thread.cc -o thread -lpthread
+
+timeout: timeout.cc ../include/linux/Timeout.hpp
+	g++ -O2 -Wall -Wextra -Wpedantic -I../include timeout.cc -o timeout
 
 tokenizer: tokenizer.cc ../include/Tokenizer.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include tokenizer.cc -o tokenizer
