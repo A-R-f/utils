@@ -11,8 +11,8 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 
 #include <time.h>
 
-template< unsigned int UNIT, clockid_t CLOCK = CLOCK_MONOTONIC_RAW >
-class Timeout {
+template< unsigned int UNITS_PER_SECOND, clockid_t CLOCK = CLOCK_MONOTONIC_RAW >
+struct Timeout {
 
 	struct Time : private timespec {
 
@@ -20,16 +20,14 @@ class Timeout {
 
 		Time(const unsigned int t)
 		{
-			tv_sec = t / UNIT;
-			tv_nsec = (t - tv_sec * UNIT) * (1e9 / UNIT);
+			tv_sec = t / UNITS_PER_SECOND;
+			tv_nsec = (t - tv_sec * UNITS_PER_SECOND) * (1e9 / UNITS_PER_SECOND);
 		}
-
-//		Time(const struct timespec& ts) : timespec(ts) {}
 
 		operator unsigned int() const
 		{
-			const unsigned int DIV = 1.0e9 / UNIT;
-			return UNIT * tv_sec + (tv_nsec + DIV/2) / DIV;
+			const unsigned int DIV = 1.0e9 / UNITS_PER_SECOND;
+			return UNITS_PER_SECOND * tv_sec + (tv_nsec + DIV/2) / DIV;
 		}
 
 		Time& operator+=(const Time& t)
@@ -50,15 +48,19 @@ class Timeout {
 
 	};
 
+private:
+
 	Time timeout_time;
 
 public:
 
 	Timeout(const unsigned int val) : timeout_time(Time() + Time(val)) {}
 
-	Timeout& operator+=(const unsigned int val) { timeout_time += val; return *this; }
+	Timeout& operator+=(const unsigned int val) { timeout_time += Time(val); return *this; }
 
 	operator bool() const { return Time() > timeout_time; }
+	bool timeout() const { return (*this)(); }
+	bool timeout(const Time& t) const { return t > timeout_time; }
 
 };
 

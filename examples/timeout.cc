@@ -15,5 +15,8 @@ int main()
 	Timeout_ms tout(t);
 	while( !tout );
 	std::cout << "timeout!" << std::endl;
+	tout += t;
+	for( Timeout_ms::Time tout_time ; !tout.timeout(tout_time) ; tout_time = Timeout_ms::Time() );
+	std::cout << "and again!" << std::endl;
 	return 0;
 }
