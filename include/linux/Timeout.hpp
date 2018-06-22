@@ -9,7 +9,7 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 #ifndef __LINUX_TIMEOUT_HPP
 #define __LINUX_TIMEOUT_HPP
 
-#include <time.h>
+#include <ctime>
 
 template< unsigned int UNITS_PER_SECOND, clockid_t CLOCK = CLOCK_MONOTONIC_RAW >
 struct Timeout {
