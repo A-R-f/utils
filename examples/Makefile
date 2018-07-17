@@ -1,4 +1,4 @@
-TARGETS = circbuf cobs msgproc pagedmemory pipe serial signal socket thread timeout tokenizer
+TARGETS = circbuf cobs msgproc pagedmemory pipe runtimefile serial signal socket thread timeout tokenizer
 WINTARGETS = winserial.exe winthread.exe
 
 all: $(TARGETS)
@@ -22,6 +22,9 @@ pagedmemory: pagedmemory.cc ../include/PagedMemory.hpp
 
 pipe: pipe.cc ../include/linux/Pipe.hpp ../include/linux/Poll.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include pipe.cc -o pipe
+
+runtimefile: runtimefile.cc ../include/RunTimeFile.hpp
+	g++ -O2 -Wall -Wextra -Wpedantic -I../include runtimefile.cc -o runtimefile
 
 serial: serial.cc ../include/linux/Serial.hpp ../include/linux/Poll.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include serial.cc -o serial

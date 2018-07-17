@@ -1,5 +1,5 @@
-#ifndef __PAGEWRITER_HPP
-#define __PAGEWRITER_HPP
+#ifndef __PAGEDMEMORY_HPP
+#define __PAGEDMEMORY_HPP
 
 
 template< typename DATA_TYPE, DATA_TYPE* START, unsigned int PAGES, unsigned int PAGE_SIZE >
