@@ -69,14 +69,14 @@ public:
 		return _comstat.cbInQue > 0;
 	}
 
-	DWORD read(unsigned char buf[], const unsigned int len)
+	DWORD read(unsigned char buf[], const unsigned int len) const
 	{
 		DWORD nr;
 		ReadFile(_fd, buf, len, &nr, NULL);
 		return nr;
 	}
 
-	DWORD read(std::string& s)
+	DWORD read(std::string& s) const
 	{
 		s.clear();
 		for( char c = ~('\0' | '\n') ; c != '\n' ; s += c )
@@ -87,14 +87,14 @@ public:
 		return s.length();
 	}
 
-	DWORD write(const unsigned char buf[], const unsigned int len)
+	DWORD write(const unsigned char buf[], const unsigned int len) const
 	{
 		DWORD nw;
 		WriteFile(_fd, buf, len, &nw, NULL);
 		return nw;
 	}
 
-	DWORD write(const std::string& s) { return write((unsigned char*)s.c_str(), s.length()); }
+	DWORD write(const std::string& s) const { return write((unsigned char*)s.c_str(), s.length()); }
 };
 
 #endif
