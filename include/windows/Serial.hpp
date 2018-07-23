@@ -79,11 +79,14 @@ public:
 	DWORD read(std::string& s) const
 	{
 		s.clear();
-		for( char c = ~('\0' | '\n') ; c != '\n' ; s += c )
-		{
-			read((unsigned char*)&c, 1);
-			if( c == '\0' ) { break; }
-		}
+		for( char c ; c != '\0' ; s += c ) { read((unsigned char*)&c, 1); }
+		return s.length();
+	}
+
+	DWORD read(std::string& s, const int delim) const
+	{
+		s.clear();
+		for( char c ; ( c != '\0' ) && ( c != delim ) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 
@@ -94,7 +97,7 @@ public:
 		return nw;
 	}
 
-	DWORD write(const std::string& s) const { return write((unsigned char*)s.c_str(), s.length()); }
+	DWORD write(const std::string& s) const { return write((unsigned char*)s.c_str(), s.length() + 1); }
 };
 
 #endif

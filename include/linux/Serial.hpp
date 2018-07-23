@@ -104,11 +104,14 @@ public:
 	int read(std::string& s) const
 	{
 		s.clear();
-		for( char c = ~('\0' | '\n') ; c != '\n' ; s += c )
-		{
-			read((unsigned char*)&c, 1);
-			if( c == '\0' ) { break; }
-		}
+		for( char c ; c != '\0' ; s += c ) { read((unsigned char*)&c, 1); }
+		return s.length();
+	}
+
+	int read(std::string& s, const int delim) const
+	{
+		s.clear();
+		for( char c ; ( c != '\0' ) && ( c != delim ) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 
@@ -132,7 +135,7 @@ public:
 	}
 
 	int write(const unsigned char buf[], const unsigned int len) const { return ::write(_fd, buf, len); }
-	int write(const std::string& s) const { return write((unsigned char*)s.c_str(), s.length()); }
+	int write(const std::string& s) const { return write((unsigned char*)s.c_str(), s.length() + 1); }
 	int write(const char* const s) const { return write(std::string(s)); }
 //template member function intended for use with std::vector<unsigned char>
 	template < typename T > int write(const T& buf) const { return write(buf.data(), buf.size()); }
