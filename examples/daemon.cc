@@ -21,6 +21,6 @@ int main(int, char** argv)
 	std::cout << "\tkill `pidof " << argv[0] << '`' << std::endl;
 	Daemon::verbose_detach(std::cerr);
 	Signal sigint(SIGINT, kill_handler);
-	while( do_run );
+	while( do_run ) { usleep(100000); };
 	return 0;
 }

@@ -44,6 +44,7 @@ static void run_client()
 	std::cin >> port;
 	Socket::Client cl(host, port, true, true);
 	std::cout << "client connected to " << cl.hostaddr_str() << std::endl;
+	usleep(10000);
 	ssize_t l = cl.send("Good morning, Server!");
 	std::cout << "sent " << l << " characters" << std::endl;
 	usleep(1000000);
