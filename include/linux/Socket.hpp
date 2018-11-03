@@ -153,6 +153,8 @@ public:
 				for( EP_Ptr_Set::iterator i = EP_Ptr_Set::begin() ; i != EP_Ptr_Set::end() ; ++i ) { delete *i; }
 			}
 
+			operator const EP_Ptr_Set&() { return *(const EP_Ptr_Set*)(this); }
+
 			const Endpoint* insert(const int fd)
 			{
 				if( fd < 0 ) { return NULL; }
@@ -194,9 +196,10 @@ public:
 
 	public:
 
-		Server(const Port p = 0, const bool autostart = false, const bool nonblock = false) : Base(autostart, nonblock)
+		Server(const Port p = 0, const bool autostart = false, const bool nonblock = false, const bool reuse = true) : Base(autostart, nonblock)
 		{
 			port(p);
+			reuse_address(reuse);
 			if( !autostart ) { return; }
 			bind();
 			listen();
@@ -208,7 +211,15 @@ public:
 
 		int listen(const int backlog = 5) const { return ::listen(fd, backlog); }
 
+		void reuse_address(const bool reuse = true) const
+		{
+			const int opval = reuse ? 1 : 0;
+			setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(opval));
+		}
+
 		EP_Ptr_Set poll_in_once() const { return conns.poll_in_once(); }
+
+		const EP_Ptr_Set& connected() const { return (const EP_Ptr_Set&)conns; }
 
 	};
 
