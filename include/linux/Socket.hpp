@@ -234,7 +234,7 @@ public:
 			connect();
 		}
 
-		int connect() const { return ::connect(fd, (const struct sockaddr*)&serv_addr, sizeof(serv_addr)); }
+		bool connect() const { return ::connect(fd, (const struct sockaddr*)&serv_addr, sizeof(serv_addr)) == 0; }
 
 		bool gethost(const std::string& name)
 		{
