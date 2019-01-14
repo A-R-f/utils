@@ -19,9 +19,7 @@ This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 #include <stdint.h>
 #include <string>
 #include <sys/socket.h>
-//#include <sys/types.h>
 #include <unistd.h>
-#include <iostream>
 
 
 struct Socket {
