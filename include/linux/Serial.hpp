@@ -1,7 +1,7 @@
 /*
 Serial.hpp
 Author: Adam Rudziński, devel@arf.net.pl
-Copyright: Adam Rudziński, 2017
+Copyright: Adam Rudziński, 2017-2019
 This is free software, licensed under GNU GPLv3 license.
 This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 */
@@ -71,6 +71,16 @@ class Serial {
 
 //	void restore() const { tcsetattr(_fd, TCSANOW, &_prevopts); }
 
+	bool keep_reading(const char c) const
+	{
+		return ( c != '\0' ) && data_available();
+	}
+
+	bool keep_reading(const char c, const char delim) const
+	{
+		return ( c != delim ) && keep_reading(c);
+	}
+
 public:
 
 	Serial(const char* const dev, const unsigned int baud = 9600) :
@@ -104,14 +114,14 @@ public:
 	int read(std::string& s) const
 	{
 		s.clear();
-		for( char c ; c != '\0' ; s += c ) { read((unsigned char*)&c, 1); }
+		for( char c = '\0' + 1 ; keep_reading(c) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 
 	int read(std::string& s, const int delim) const
 	{
 		s.clear();
-		for( char c ; ( c != '\0' ) && ( c != delim ) ; s += c ) { read((unsigned char*)&c, 1); }
+		for( char c = '\0' + 1 ; keep_reading(c, delim) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 

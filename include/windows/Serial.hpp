@@ -16,7 +16,6 @@ class Serial {
 
 	std::string _port;
 	HANDLE _fd;
-	COMSTAT _comstat;
 	DCB _dcb;
 
 	void configure(const unsigned int baud)
@@ -32,6 +31,16 @@ class Serial {
 	}
 
 //	void restore() const { SetCommState(_fd, &old_dcb); }
+
+	bool keep_reading(const char c) const
+	{
+		return ( c != '\0' ) && data_available();
+	}
+
+	bool keep_reading(const char c, const char delim) const
+	{
+		return ( c != delim ) && keep_reading(c);
+	}
 
 public:
 
@@ -54,8 +63,9 @@ public:
 	HANDLE open(const char* const dev) { return _fd = CreateFile(dev, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL); }
 	WINBOOL close()
 	{
+		const WINBOOL rv = CloseHandle(_fd);
 		_fd = INVALID_HANDLE_VALUE;
-		return CloseHandle(_fd);
+		return rv;
 	}
 
 	const HANDLE& fd() const { return _fd; }
@@ -63,8 +73,9 @@ public:
 
 	bool ok() const { return fd() != INVALID_HANDLE_VALUE; }
 
-	bool data_available()
+	bool data_available() const
 	{
+		COMSTAT _comstat;
 		ClearCommError(_fd, 0, &_comstat);
 		return _comstat.cbInQue > 0;
 	}
@@ -79,14 +90,14 @@ public:
 	DWORD read(std::string& s) const
 	{
 		s.clear();
-		for( char c ; c != '\0' ; s += c ) { read((unsigned char*)&c, 1); }
+		for( char c = '\0' + 1 ; keep_reading(c) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 
 	DWORD read(std::string& s, const int delim) const
 	{
 		s.clear();
-		for( char c ; ( c != '\0' ) && ( c != delim ) ; s += c ) { read((unsigned char*)&c, 1); }
+		for( char c = '\0' + 1 ; keep_reading(c, delim ) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 

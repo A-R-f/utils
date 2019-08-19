@@ -15,9 +15,8 @@ int main()
 	cout << "FD: " << sp.fd() << endl;
 	sp.write("v");
 	usleep(100000);
-	unsigned char buf[21];
-	int n = sp.read(buf, 20);
-	buf[n] = '\0';
+	std::string buf;
+	sp.read(buf, '\n');
 	cout << "READ: " << buf << endl;
 	return 0;
 }
