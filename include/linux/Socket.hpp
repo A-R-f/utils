@@ -123,7 +123,7 @@ private:
 		{
 			memset(&serv_addr, 0, sizeof(serv_addr));
 			serv_addr.sin_family = AF_INET;
-			serv_addr.sin_addr.s_addr = INADDR_ANY;
+			serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 			if( !autoopen ) { return; }
 			open(nonblock);
 		}
@@ -240,7 +240,7 @@ public:
 			const struct hostent* const host = gethostbyname(name.c_str());
 			if( host == NULL ) { return false; }
 			memmove(&serv_addr.sin_addr.s_addr, host->h_addr, host->h_length);
-			return true;;
+			return true;
 		}
 
 		unsigned int hostaddr() const { return serv_addr.sin_addr.s_addr; }
