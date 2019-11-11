@@ -83,8 +83,7 @@ class Serial {
 
 public:
 
-	Serial(const char* const dev, const unsigned int baud = 9600) :
-		_port(dev)
+	Serial(const std::string& dev, const unsigned int baud = 9600)
 	{
 		open(dev);
 		if( ok() ) { configure(baud); }
@@ -99,7 +98,7 @@ public:
 		}
 	}
 
-	int open(const char* const dev) { return _fd = ::open(dev, O_RDWR | O_NOCTTY); }
+	int open(const std::string& dev) { return _fd = ::open((_port = dev).c_str(), O_RDWR | O_NOCTTY); }
 	int close() { return _fd = -2 - ::close(_fd); }
 
 	int fd() const { return _fd; }
