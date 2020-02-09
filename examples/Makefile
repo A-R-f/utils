@@ -1,4 +1,4 @@
-TARGETS = circbuf cobs daemon i2c_bus module module.so msgproc multipacket pagedmemory pipe runtimefile serial signal socket thread timeout tokenizer
+TARGETS = circbuf cobs daemon i2c_bus module module.so msgproc multipacket pagedmemory pipe runtimefile serial signal socket thread timeout tokenizer unixsocket
 WINTARGETS = winserial.exe winthread.exe
 
 all: $(TARGETS)
@@ -58,6 +58,9 @@ timeout: timeout.cc ../include/linux/Timeout.hpp
 
 tokenizer: tokenizer.cc ../include/Tokenizer.hpp
 	g++ -O2 -Wall -Wextra -Wpedantic -I../include tokenizer.cc -o tokenizer
+
+unixsocket: unixsocket.cc ../include/linux/UnixSocket.hpp
+	g++ -O2 -Wall -Wextra -Wpedantic -I../include unixsocket.cc -o unixsocket
 
 winserial.exe: winserial.cc ../include/windows/Serial.hpp
 	x86_64-w64-mingw32-g++ -static -O2 -Wall -Wextra -Wpedantic -I../include winserial.cc -o winserial.exe

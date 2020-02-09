@@ -1,28 +1,26 @@
 /*
-Socket.hpp
+UnixSocket.hpp
 Author: Adam Rudziński, devel@arf.net.pl
-Copyright: Adam Rudziński, 2018, 2020
+Copyright: Adam Rudziński, 2020
 This is free software, licensed under GNU GPLv3 license.
 This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 */
 
-#ifndef __LINUX_SOCKET_HPP
-#define __LINUX_SOCKET_HPP
+#ifndef __LINUX_UNIXSOCKET_HPP
+#define __LINUX_UNIXSOCKET_HPP
 
 #include <cstring>
 #include <linux/Poll.hpp>
-#include <linux/tcp.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <set>
 #include <string>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 
-struct Socket {
+struct UnixSocket {
 
-	typedef u_short Port;
+	typedef std::string Path;
 
 	struct Endpoint {
 
@@ -30,7 +28,7 @@ struct Socket {
 
 		int fd;
 
-		int open(const bool nonblock = false) { return fd = socket(AF_INET, SOCK_STREAM | (nonblock ? SOCK_NONBLOCK : 0), 0); }
+		int open(const bool nonblock = false) { return fd = socket(AF_UNIX, SOCK_SEQPACKET | (nonblock ? SOCK_NONBLOCK : 0), 0); }
 
 		int close()
 		{
@@ -52,12 +50,20 @@ struct Socket {
 
 		ssize_t write(const void* const buf, const size_t len) const { return ::write(fd, buf, len); }
 
-		ssize_t send(const std::string& msg) const { return write(msg.c_str(), msg.length()); }
-
-		void set_delay(const bool d = false) const
+		ssize_t send(const std::string& msg) const
 		{
-			const int flag = d ? 0 : 1;
-			setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+			ssize_t len = 0;
+			size_t tosend = msg.length();
+			const char* const ptr = msg.c_str();
+			while( tosend > 0 )
+			{
+				const size_t seg = ( tosend > 16 ) ? 16 : tosend;
+				const ssize_t n = write(ptr + len, seg);
+				if( n < 0 ) { return n; }
+				len += n;
+				tosend -= n;
+			}
+			return len;
 		}
 
 		int poll_in() const { return Poll<POLLIN, 1, 0>(fd); }
@@ -68,7 +74,15 @@ struct Socket {
 		{
 			msg.clear();
 			ssize_t len = 0;
-			for( char c ; poll_in() && read(&c, 1) ; msg += c, ++len );
+			for( ;  ; )
+			{
+				if( !poll_in() ) { break; }
+				char buf[16];
+				ssize_t n = read(buf, sizeof(buf));
+				if( n <= 0 ) { break; }
+				for( ssize_t i = 0 ; i < n ; ++i ) { msg += buf[i]; }
+				len += n;
+			}
 			return len;
 		}
 
@@ -115,25 +129,31 @@ private:
 
 	protected:
 
-		struct sockaddr_in serv_addr;
+		struct sockaddr_un serv_addr;
 
 		Base(const bool autoopen = false, const bool nonblock = false)
 		{
 			memset(&serv_addr, 0, sizeof(serv_addr));
-			serv_addr.sin_family = AF_INET;
-			serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+			serv_addr.sun_family = AF_UNIX;
 			if( !autoopen ) { return; }
 			open(nonblock);
 		}
 
 	public:
 
+		~Base() { close(); }
+
 		int open(const bool nonblock = false) { return Endpoint::open(nonblock); }
-		int close() { return Endpoint::close(); }
+		int close()
+		{
+			const int rv = Endpoint::close();
+			unlink(serv_addr.sun_path);
+			return rv;
+		}
 
-		Port port() const { return ntohs(serv_addr.sin_port); }
+		Path path() const { return serv_addr.sun_path; }
 
-		void port(const Port p) { serv_addr.sin_port = htons(p); }
+		void path(const Path& p) { strncpy(serv_addr.sun_path, p.c_str(), sizeof(serv_addr.sun_path) - 1); }
 
 	};
 
@@ -192,10 +212,9 @@ public:
 
 	public:
 
-		Server(const Port p = 0, const bool autostart = false, const bool nonblock = false, const bool reuse = true) : Base(autostart, nonblock)
+		Server(const Path& p = Path(), const bool autostart = false, const bool nonblock = false) : Base(autostart, nonblock)
 		{
-			port(p);
-			reuse_address(reuse);
+			path(p);
 			if( !autostart ) { return; }
 			bind();
 			listen();
@@ -207,12 +226,6 @@ public:
 
 		int listen(const int backlog = 5) const { return ::listen(fd, backlog); }
 
-		void reuse_address(const bool reuse = true) const
-		{
-			const int opval = reuse ? 1 : 0;
-			setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(opval));
-		}
-
 		EP_Ptr_Set poll_in_once() const { return conns.poll_in_once(); }
 
 		const EP_Ptr_Set& connected() const { return (const EP_Ptr_Set&)conns; }
@@ -222,33 +235,14 @@ public:
 
 	struct Client : public Base {
 
-		Client(const std::string hostname, const Port p, const bool autostart = false, const bool nonblock = false) : Base(autostart, nonblock)
+		Client(const Path& p, const bool autostart = false, const bool nonblock = false) : Base(autostart, nonblock)
 		{
-			gethost(hostname);
-			port(p);
+			path(p);
 			if( !autostart ) { return; }
 			connect();
 		}
 
 		bool connect() const { return ::connect(fd, (const struct sockaddr*)&serv_addr, sizeof(serv_addr)) == 0; }
-
-		bool gethost(const std::string& name)
-		{
-			memset(&serv_addr.sin_addr.s_addr, 0, sizeof(serv_addr.sin_addr.s_addr));
-			const struct hostent* const host = gethostbyname(name.c_str());
-			if( host == NULL ) { return false; }
-			memmove(&serv_addr.sin_addr.s_addr, host->h_addr, host->h_length);
-			return true;
-		}
-
-		unsigned int hostaddr() const { return serv_addr.sin_addr.s_addr; }
-
-		std::string hostaddr_str() const
-		{
-			char buf[4*3 + 3*1 + 1];
-			std::sprintf(buf, "%d.%d.%d.%d", (hostaddr() >> 0) & 0xff, (hostaddr() >> 8) & 0xff, (hostaddr() >> 16) & 0xff, (hostaddr() >> 24) & 0xff);
-			return buf;
-		}
 
 	};
 
