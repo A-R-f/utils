@@ -71,15 +71,11 @@ class Serial {
 
 //	void restore() const { tcsetattr(_fd, TCSANOW, &_prevopts); }
 
-	bool keep_reading(const char c) const
-	{
-		return ( c != '\0' ) && data_available();
-	}
+	bool keep_reading_blocking(const char c) const { return ( c != '\0' ); }
+	bool keep_reading_blocking(const char c, const char delim) const { return ( c != delim ) && keep_reading_blocking(c); }
 
-	bool keep_reading(const char c, const char delim) const
-	{
-		return ( c != delim ) && keep_reading(c);
-	}
+	bool keep_reading(const char c) const { return keep_reading_blocking(c) && data_available(); }
+	bool keep_reading(const char c, const char delim) const { return ( c != delim ) && keep_reading(c); }
 
 public:
 
@@ -117,10 +113,38 @@ public:
 		return s.length();
 	}
 
+	int read_blocking(std::string& s) const
+	{
+		s.clear();
+		for( char c = '\0' + 1 ; keep_reading_blocking(c) ; s += c ) { read((unsigned char*)&c, 1); }
+		return s.length();
+	}
+
 	int read(std::string& s, const int delim) const
 	{
 		s.clear();
 		for( char c = '\0' + 1 ; keep_reading(c, delim) ; s += c ) { read((unsigned char*)&c, 1); }
+		return s.length();
+	}
+
+	int read_blocking(std::string& s, const int delim) const
+	{
+		s.clear();
+		for( char c = '\0' + 1 ; keep_reading_blocking(c, delim) ; s += c ) { read((unsigned char*)&c, 1); }
+		return s.length();
+	}
+
+	int read(std::string& s, const int delim, const size_t maxlen) const
+	{
+		s.clear();
+		for( char c = '\0' + 1 ; ( s.length() < maxlen ) && keep_reading(c, delim) ; s += c ) { read((unsigned char*)&c, 1); }
+		return s.length();
+	}
+
+	int read_blocking(std::string& s, const int delim, const size_t maxlen) const
+	{
+		s.clear();
+		for( char c = '\0' + 1 ; ( s.length() < maxlen ) && keep_reading_blocking(c, delim) ; s += c ) { read((unsigned char*)&c, 1); }
 		return s.length();
 	}
 
@@ -149,7 +173,8 @@ public:
 //template member function intended for use with std::vector<unsigned char>
 	template < typename T > int write(const T& buf) const { return write(buf.data(), buf.size()); }
 
-	void flush_in() const { for( int c[1] ; data_available() ; read((unsigned char*)c, sizeof(c)) ); }
+	void flush_in() const { tcflush(fd(), TCIFLUSH); }
+	void wait_send() const { tcdrain(fd()); }
 };
 
 
