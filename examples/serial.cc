@@ -13,6 +13,7 @@ int main()
 {
 	Serial sp("/dev/ttyUSB0", 115200);
 	cout << "FD: " << sp.fd() << endl;
+	sp.flush_in();
 	sp.write("v");
 	usleep(100000);
 	std::string buf;

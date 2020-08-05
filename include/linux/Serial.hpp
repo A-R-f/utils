@@ -1,7 +1,7 @@
 /*
 Serial.hpp
 Author: Adam Rudziński, devel@arf.net.pl
-Copyright: Adam Rudziński, 2017-2019
+Copyright: Adam Rudziński, 2017-2020
 This is free software, licensed under GNU GPLv3 license.
 This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 */
@@ -148,6 +148,8 @@ public:
 	int write(const char* const s) const { return write(std::string(s)); }
 //template member function intended for use with std::vector<unsigned char>
 	template < typename T > int write(const T& buf) const { return write(buf.data(), buf.size()); }
+
+	void flush_in() const { for( int c[1] ; data_available() ; read((unsigned char*)c, sizeof(c)) ); }
 };
 
 

@@ -1,7 +1,7 @@
 /*
 Serial.hpp
 Author: Adam Rudziński, devel@arf.net.pl
-Copyright: Adam Rudziński, 2017
+Copyright: Adam Rudziński, 2017-2020
 This is free software, licensed under GNU GPLv3 license.
 This software comes with ABSOLUTELY NO WARRANTY, USE AT YOUR OWN RISK!
 */
@@ -109,6 +109,8 @@ public:
 	}
 
 	DWORD write(const std::string& s) const { return write((unsigned char*)s.c_str(), s.length() + 1); }
+
+	void flush_in() const { for( int c[1] ; data_available() ; read((unsigned char*)c, sizeof(c)) ); }
 };
 
 #endif
