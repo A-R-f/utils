@@ -69,6 +69,12 @@ class Serial {
 		if( tcsetattr(_fd, TCSANOW, &_opts) != 0 ) { close(); }
 	}
 
+	void init(const std::string& dev, const unsigned int baud)
+	{
+		open(dev);
+		if( ok() ) { configure(baud); }
+	}
+
 //	void restore() const { tcsetattr(_fd, TCSANOW, &_prevopts); }
 
 	bool keep_reading_blocking(const char c) const { return ( c != '\0' ); }
@@ -81,13 +87,12 @@ public:
 
 	Serial(const std::string& dev, const unsigned int baud = 9600)
 	{
-		open(dev);
-		if( ok() ) { configure(baud); }
+		init(dev, baud);
 	}
 
 	~Serial()
 	{
-		if( ok() )
+		if( fd_ok() )
 		{
 //			restore();
 			close();
@@ -97,10 +102,18 @@ public:
 	int open(const std::string& dev) { return _fd = ::open((_port = dev).c_str(), O_RDWR | O_NOCTTY); }
 	int close() { return _fd = -2 - ::close(_fd); }
 
+	int reopen(const char* const dev, const unsigned int baud = 9600)
+	{
+		if( fd_ok() ) { close(); }
+		init(dev, baud);
+		return _fd;
+	}
+
 	int fd() const { return _fd; }
 	const std::string& port() const { return _port; }
 
-	bool ok() const { return fd() >= 0; }
+	bool fd_ok() const { return fd() >= 0; }
+	bool ok() const { return fd_ok() && !Poll<0>(_fd); }
 
 	bool data_available() const { return InputPoll(_fd) > 0; }
 
